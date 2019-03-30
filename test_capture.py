@@ -15,7 +15,7 @@ fps = str(cap.get(cv2.CAP_PROP_FPS))
 command = [ffmpeg,
         '-y',
         '-f', 'rawvideo',
-        '-vcodec','libx264',
+        '-vcodec','rawvideo',
         '-s', dimension,
         '-pix_fmt', 'bgr24',
         '-preset', 'ultrafast',
@@ -25,7 +25,8 @@ command = [ffmpeg,
         '-an',
         '-b:v', '2500k',
         '-f', 'flv',
-        'rtmp://live-jfk.twitch.tv/app/' + os.environ['twitch'] ]
+        'output.flv']
+#        'rtmp://live-jfk.twitch.tv/app/' + os.environ['twitch'] ]
 
 print(command)
 proc = sp.Popen(command, stdin=sp.PIPE, stderr=sp.PIPE)
