@@ -24,8 +24,8 @@ command = [ffmpeg,
         '-i', '-',
         '-an',
         '-b:v', '2500k',
-        '-f', 'flv',
-        'output.flv']
+        '-f', 'mpeg4',
+        'output.mpeg4']
 #        'rtmp://live-jfk.twitch.tv/app/' + os.environ['twitch'] ]
 
 print(command)
