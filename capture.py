@@ -1,6 +1,14 @@
-'''capture.py'''
-import cv2, sys
+import numpy as np
+import sys
+import cv2
+
 cap = cv2.VideoCapture(0)
-while True :
+
+while(cap.isOpened()):
     ret, frame = cap.read()
-    sys.stdout.buffer.write( frame.tostring() )
+    if ret==True:        
+        sys.stdout.buffer.write(frame.tobytes())
+    else:
+        break
+
+cap.release()

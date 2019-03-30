@@ -1,1 +1,1 @@
-python3 capture.py | ffmpeg -f image2pipe -vcodec libx264 -pix_fmt yuv420p -preset ultrafast -r 25 -g 20 -b:v 2500k -codec:a libmp3lame -ar 44100 -threads 6 -b:a 11025 -bufsize 512k -f flv -s 640x480 rtmp://live-jfk.twitch.tv/app/live_426657593_FhvinT219zg91RTzwN0htv9xz8UZWi
+python3 capture.py | ffmpeg -f image2pipe -vcodec libx264 -pix_fmt yuv420p -preset ultrafast -r 25 -g 20 -b:v 2500k -codec:a libmp3lame -ar 44100 -threads 6 -b:a 11025 -bufsize 512k -f flv -s 640x480 rtmp://live-jfk.twitch.tv/app/$twitch
