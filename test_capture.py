@@ -34,12 +34,9 @@ while True:
     ret, frame = cap.read()
     if not ret:
         break
-    output = proc.stdout.readline()
-    if output == '' and proc.poll() is not None:
-        break
-    if output:
-        print(output.strip())
-    rc = proc.poll()
+    out, err = proc.communicate()
+    print(out)
+    print(err)
 
     proc.stdin.write(frame.tostring())
 
