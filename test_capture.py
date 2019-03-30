@@ -39,7 +39,7 @@ while True:
         break
     if output:
         print(output.strip())
-    rc = process.poll()
+    rc = proc.poll()
 
     proc.stdin.write(frame.tostring())
 
