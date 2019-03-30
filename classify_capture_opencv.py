@@ -90,7 +90,6 @@ def main():
 #boxes is a list of bounding boxes added
 #frame is the stillframe with the boxes added
 def analyze_frame(frame, boxes, engine):
-    boxes = []
     img = Image.fromarray(frame)
     ans = engine.DetectWithImage(img, threshold=0.05, keep_aspect_ratio=True,
         relative_coord=False, top_k=10)
@@ -115,7 +114,7 @@ def draw_boxes_on_picture(boxes, img):
 
 
 def label_is_cat(label_id):
-    return True # TODO
+    (label_id == 16) or (label_id == 17) or (label_id == 73) or (label_id == 87)
 
 if __name__ == '__main__':
     main()
