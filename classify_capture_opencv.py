@@ -3,14 +3,15 @@ Usage:
 
 python3 demo/classify_capture_opencv.py \
     --model test_data/inception_v4_299_quant_edgetpu.tflite  \
-    --label test_data/imagenet_labels.txt
+    --label test_data/imagenet_labels.txt \
+    [--synchronous]
 
 """
 import argparse
 import io
 import time
 import sys
-import subprocess
+import multiprocessing
 
 import numpy as np
 
@@ -27,6 +28,9 @@ def main():
       '--model', help='File path of Tflite model.', required=True)
     parser.add_argument(
       '--label', help='File path of label file.', required=True)
+    parser.add_argument(
+      '--synchronous', help='Use to do anlysis synchronously.',
+      required=False, action="store_true", default=False)
     args = parser.parse_args()
 
     with open(args.label, 'r') as f:
@@ -38,29 +42,32 @@ def main():
     try:
         cap = cv2.VideoCapture(0)
         _, width, height, channels = engine.get_input_tensor_shape()
-        print('test1')
-        print('test2')
         font = cv2.FONT_HERSHEY_SIMPLEX
         is_processing = True
+        child = None
+        child_result = None
         while True:
             ret, frame = cap.read()
 
-            resized = cv2.resize(frame, (width, height))
-            if not is_processing:
-                is_processing = True
-                input = np.frombuffer(resized, dtype=np.uint8)
-                start_time = time.time()
-                results = engine.ClassifyWithInputTensor(input, top_k=1)
-                elapsed_time = time.time() - start_time
-                if results:
-                    confidence = results[0][1]
-                    label = labels[results[0][0]]
-                    print("Elapsed time: {:0.02f}".format(elapsed_time * 1000))
-                cv2.putText(frame, label, (0, 30), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                cv2.putText(frame, "{:0.02f}".format(confidence), (0, 50), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                cv2.imshow('frame', frame)
+            frame = cv2.resize(frame, (width, height))
 
-            sys.stdout.write(frame.tostring())
+            if args.synchronous:
+                child_result = []
+                analyzed_frame(frame, child_result, engine)
+            else:
+                if not is_processing:
+                    # kick off analysis in subprocess, if not currently analyzing
+                    is_processing = True
+                    child_result = []
+                    child = multiprocessing.Process(target=analyze_frame, args=(frame, child_result))
+                    child.start()
+                elif child is not None and not child.is_alive():
+                    child.join()
+                    # child has finished processing, grab results
+                    # TODO:figure out what to do with the results, they'll need to be added to the raw frame we send to stdout
+                    pass
+
+            sys.stdout.buffer.write(frame.tostring())
 
     except Exception as e:
         print('thats no good!')
@@ -69,7 +76,6 @@ def main():
         print('Shutting down...')
     finally:
         cap.release()
-        cv2.destroyAllWindows()
 
 #Pass in the numpy array of the frame and the detection engine
 #output is (boxes, frame) where
