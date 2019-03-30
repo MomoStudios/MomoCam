@@ -15,8 +15,10 @@ import subprocess
 import numpy as np
 
 import cv2
+from PIL import Image
+from PIL import ImageDraw
 
-import edgetpu.classification.engine
+from edgetpu.detection.engine import DetectionEngine
 
 
 def main():
@@ -31,7 +33,7 @@ def main():
         pairs = (l.strip().split(maxsplit=1) for l in f.readlines())
         labels = dict((int(k), v) for k, v in pairs)
 
-    engine = edgetpu.classification.engine.ClassificationEngine(args.model)
+    engine = DetectionEngine(args.model)
 
     try:
         cap = cv2.VideoCapture(0)
@@ -69,9 +71,37 @@ def main():
         cap.release()
         cv2.destroyAllWindows()
 
-def analyze_frame(frame):
-    pass
+#Pass in the numpy array of the frame and the detection engine
+#output is (boxes, frame) where
+#boxes is a list of bounding boxes added
+#frame is the stillframe with the boxes added
+def analyze_frame(frame, boxes, engine):
+    boxes = []
+    img = Image.fromarray(frame)
+    ans = engine.DetectWithImage(img, threshold=0.05, keep_aspect_ratio=True,
+        relative_coord=False, top_k=10)
+    for obj in ans:
+        print ('-----------------------------------------')
+        if labels:
+            print(labels[obj.label_id])
+        print ('score = ', obj.score)
+        box = obj.bounding_box.flatten().tolist()
+        print ('box = ', box)
+        # Draw a rectangle.
+        if label_is_cat(obj.label_id):
+            boxes.append(box)
+    # draw_boxes_on_picture(boxes, img)
+    # out = np.array(img)
 
+#draws the specified boxes in red on the input picture
+def draw_boxes_on_picture(boxes, img):
+    draw = ImageDraw.Draw(img)
+    for box in boxes:
+        draw.rectangle(box, outline='red')
+
+
+def label_is_cat(label_id):
+    return True # TODO
 
 if __name__ == '__main__':
     main()
