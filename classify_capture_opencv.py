@@ -9,6 +9,7 @@ python3 demo/classify_capture_opencv.py \
 import argparse
 import io
 import time
+import sys
 
 import numpy as np
 
@@ -33,8 +34,11 @@ def main():
 
     try:
         cap = cv2.VideoCapture(0)
-        font = cv2.FONT_HERSHEY_SIMPLEX
         _, width, height, channels = engine.get_input_tensor_shape()
+        print('test1')
+        print('test2')
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        is_processing = True
         while True:
             ret, frame = cap.read()
 
@@ -43,17 +47,27 @@ def main():
                 break
 
             resized = cv2.resize(frame, (width, height))
-            input = np.frombuffer(resized, dtype=np.uint8)
-            start_time = time.time()
-            results = engine.ClassifyWithInputTensor(input, top_k=1)
-            elapsed_time = time.time() - start_time
-            if results:
-                confidence = results[0][1]
-                label = labels[results[0][0]]
-                print("Elapsed time: {:0.02f}".format(elapsed_time * 1000))
-            cv2.putText(frame, label, (0, 30), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.putText(frame, "{:0.02f}".format(confidence), (0, 50), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.imshow('frame', frame)
+            if not is_processing:
+                is_processing = True
+                input = np.frombuffer(resized, dtype=np.uint8)
+                start_time = time.time()
+                results = engine.ClassifyWithInputTensor(input, top_k=1)
+                elapsed_time = time.time() - start_time
+                if results:
+                    confidence = results[0][1]
+                    label = labels[results[0][0]]
+                    print("Elapsed time: {:0.02f}".format(elapsed_time * 1000))
+                cv2.putText(frame, label, (0, 30), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(frame, "{:0.02f}".format(confidence), (0, 50), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.imshow('frame', frame)
+
+            sys.stdout.write(frame.tostring())
+
+    except Exception as e:
+        print('thats no good!')
+        print(e)
+    except KeyboardInterrupt:
+        print('Shutting down...')
     finally:
         cap.release()
         cv2.destroyAllWindows()
