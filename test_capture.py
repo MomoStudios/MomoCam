@@ -27,12 +27,15 @@ command = [ffmpeg,
         '-f', 'flv',
         'rtmp://live-jfk.twitch.tv/app/' + os.environ['twitch'] ]
 
+print(command)
 proc = sp.Popen(command, stdin=sp.PIPE, stderr=sp.PIPE)
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
+    for line in iter(process.stdout.readline, ''):  # replace '' with b'' for Python 3
+        sys.stdout.write(line)
     proc.stdin.write(frame.tostring())
 
 cap.release()
