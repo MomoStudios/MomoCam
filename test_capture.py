@@ -21,10 +21,10 @@ command = [ffmpeg,
         '-r', fps,
         '-i', '-',
         '-an',
-        '-vcodec', 'mpeg4',
+        '-vcodec', 'flv',
         '-b:v', '5000k',
-        'output.mp4' ] 
-#        'rtmp://live-jfk.twitch.tv/app/' + os.environ['twitch'] ]
+#        'output.mp4' ] 
+        'rtmp://live-jfk.twitch.tv/app/' + os.environ['twitch'] ]
 
 proc = sp.Popen(command, stdin=sp.PIPE, stderr=sp.PIPE)
 
