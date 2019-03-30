@@ -34,7 +34,7 @@ while True:
     ret, frame = cap.read()
     if not ret:
         break
-    for line in iter(process.stdout.readline, ''):  # replace '' with b'' for Python 3
+    for line in iter(proc.stdout.readline, ''):  # replace '' with b'' for Python 3
         sys.stdout.write(line)
     proc.stdin.write(frame.tostring())
 
