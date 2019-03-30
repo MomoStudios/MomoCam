@@ -18,14 +18,12 @@ command = [ffmpeg,
         '-vcodec','rawvideo',
         '-s', dimension,
         '-pix_fmt', 'bgr24',
-        '-preset', 'ultrafast',
         '-r', fps,
-        'bufsize', '512k',
         '-i', '-',
         '-an',
-        '-b:v', '2500k',
-        '-f', 'mpeg4',
-        'output.mpeg4']
+        '-vcodec', 'mpeg4',
+        '-b:v', '5000k',
+        'output.mp4' ] 
 #        'rtmp://live-jfk.twitch.tv/app/' + os.environ['twitch'] ]
 
 print(command)
