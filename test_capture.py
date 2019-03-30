@@ -34,8 +34,13 @@ while True:
     ret, frame = cap.read()
     if not ret:
         break
-    for line in iter(proc.stdout.readline, ''):  # replace '' with b'' for Python 3
-        sys.stdout.write(line)
+    output = proc.stdout.readline()
+    if output == '' and proc.poll() is not None:
+        break
+    if output:
+        print(output.strip())
+    rc = process.poll()
+
     proc.stdin.write(frame.tostring())
 
 cap.release()
