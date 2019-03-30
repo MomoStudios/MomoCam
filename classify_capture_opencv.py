@@ -10,6 +10,7 @@ import argparse
 import io
 import time
 import sys
+import subprocess
 
 import numpy as np
 
@@ -42,10 +43,6 @@ def main():
         while True:
             ret, frame = cap.read()
 
-            # Display the resulting frame
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
             resized = cv2.resize(frame, (width, height))
             if not is_processing:
                 is_processing = True
@@ -71,6 +68,9 @@ def main():
     finally:
         cap.release()
         cv2.destroyAllWindows()
+
+def analyze_frame(frame):
+    pass
 
 
 if __name__ == '__main__':

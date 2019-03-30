@@ -1,7 +1,6 @@
 '''capture.py'''
-import cv, sys
-cap = cv.CaptureFromCAM(0)                    # 0 is for /dev/video0
+import cv2, sys
+cap = cv2.VideoCapture(0)
 while True :
-    if not cv.GrabFrame(cap) : break
-    frame = cv.RetrieveFrame(cap)
-    sys.stdout.write( frame.tostring() )
+    ret, frame = cap.read()
+    sys.stdout.buffer.write( frame.tostring() )
