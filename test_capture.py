@@ -26,16 +26,10 @@ command = [ffmpeg,
         'output.mp4' ] 
 #        'rtmp://live-jfk.twitch.tv/app/' + os.environ['twitch'] ]
 
-print(command)
 proc = sp.Popen(command, stdin=sp.PIPE, stderr=sp.PIPE)
 
 while True:
     ret, frame = cap.read()
-    if not ret:
-        break
-    out, err = proc.communicate()
-    print(out)
-    print(err)
 
     proc.stdin.write(frame.tostring())
 
