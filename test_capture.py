@@ -20,7 +20,7 @@ command = [ffmpeg,
         '-pix_fmt', 'bgr24',
         '-preset', 'ultrafast',
         '-r', fps,
-        'bufsize', '512k'
+        'bufsize', '512k',
         '-i', '-',
         '-an',
         '-b:v', '2500k',
