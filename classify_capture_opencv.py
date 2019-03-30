@@ -4,7 +4,7 @@ Usage:
 python3 demo/classify_capture_opencv.py \
     --model test_data/inception_v4_299_quant_edgetpu.tflite  \
     --label test_data/imagenet_labels.txt \
-    [--synchronous]
+    [--synchronous] [--local]
 
 """
 import argparse
@@ -30,6 +30,9 @@ def main():
       '--label', help='File path of label file.', required=True)
     parser.add_argument(
       '--synchronous', help='Use to do anlysis synchronously.',
+      required=False, action="store_true", default=False)
+    parser.add_argument(
+      '--local', help='send output to local window, instead of twitch',
       required=False, action="store_true", default=False)
     args = parser.parse_args()
 
@@ -67,7 +70,11 @@ def main():
                     # TODO:figure out what to do with the results, they'll need to be added to the raw frame we send to stdout
                     pass
 
-            sys.stdout.buffer.write(frame.tostring())
+            if args.local:
+                cv2.imshow('frame', frame)
+            else:
+                sys.stdout.buffer.write(frame.tostring())
+
 
     except Exception as e:
         print('thats no good!')
@@ -76,6 +83,7 @@ def main():
         print('Shutting down...')
     finally:
         cap.release()
+        cv2.destroyAllWindows()
 
 #Pass in the numpy array of the frame and the detection engine
 #output is (boxes, frame) where
