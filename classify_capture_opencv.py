@@ -112,8 +112,7 @@ def analyze_frame(frame, boxes, engine, labels):
 
 #draws the specified boxes in red on the input picture
 def draw_boxes_on_picture(boxes, img):
-    height = len(img)
-    width = len(img[0])
+    height, width = img.shape[:2]
     draw = ImageDraw.Draw(img)
     for box in boxes:
         absoluteBox = (int(box[0] * width), int(box[1] * height), int(box[2] * width), int(box[3] * height)) 
