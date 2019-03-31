@@ -93,6 +93,7 @@ def analyze_frame(frame, boxes, engine):
     img = Image.fromarray(frame)
     ans = engine.DetectWithImage(img, threshold=0.05, keep_aspect_ratio=True,
         relative_coord=False, top_k=10)
+    _, width, height, _ = engine.get_input_tensor_shape()
     for obj in ans:
         print ('-----------------------------------------')
         if labels:
@@ -100,17 +101,22 @@ def analyze_frame(frame, boxes, engine):
         print ('score = ', obj.score)
         box = obj.bounding_box.flatten().tolist()
         print ('box = ', box)
+        relative_box = (box[0] / width, box[1] / height, box[2] / width, box[3] / height)
+        print ('relative_box = ', relative_box)
         # Draw a rectangle.
         if label_is_cat(obj.label_id):
-            boxes.append(box)
+            boxes.append(relative_box)
     # draw_boxes_on_picture(boxes, img)
     # out = np.array(img)
 
 #draws the specified boxes in red on the input picture
 def draw_boxes_on_picture(boxes, img):
+    height = len(img)
+    width = len(img[0])
     draw = ImageDraw.Draw(img)
     for box in boxes:
-        draw.rectangle(box, outline='red')
+        absoluteBox = (int(box[0] * width), int(box[1] * height), int(box[2] * width), int(box[3] * height)) 
+        draw.rectangle(absoluteBox, outline='red')
 
 
 def label_is_cat(label_id):
